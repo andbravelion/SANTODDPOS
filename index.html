@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANTODD ENTERPRISES - POS System</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--bg:#0C1117;--bg2:#131B26;--card:#1A2535;--card2:#1F2D40;--border:#2A3A4E;--text:#E8ECF1;--muted:#6B8299;--accent:#D4952A;--accent2:#E8A838;--accent-bg:rgba(212,149,42,.1);--success:#2DD4A0;--danger:#EF4444;--info:#38BDF8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+.mono{font-family:'JetBrains Mono',monospace}
+input,select,textarea{font-family:'Space Grotesk',sans-serif;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;outline:none;transition:border .2s,box-shadow .2s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+input::placeholder{color:var(--muted)}
+select option{background:var(--card);color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .2s;font-family:'Space Grotesk',sans-serif}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#0C1117}.btn-primary:hover{background:var(--accent2);box-shadow:0 4px 20px rgba(212,149,42,.3)}
+.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--border)}
+.btn-danger{background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.3)}.btn-danger:hover{background:rgba(239,68,68,.25)}
+.btn-success{background:rgba(45,212,160,.15);color:#2DD4A0;border:1px solid rgba(45,212,160,.3)}.btn-success:hover{background:rgba(45,212,160,.25)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.card-header{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.badge-admin{background:rgba(239,68,68,.15);color:#EF4444}
+.badge-manager{background:rgba(56,189,248,.15);color:#38BDF8}
+.badge-supervisor{background:rgba(168,85,247,.15);color:#A855F7}
+.badge-cashier{background:rgba(45,212,160,.15);color:#2DD4A0}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:12px 14px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:12px 14px;border-bottom:1px solid rgba(42,58,78,.5);font-size:14px}
+tr:hover td{background:rgba(42,58,78,.3)}
+.toast-container{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;animation:slideIn .3s ease;min-width:280px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.toast-success{background:#0D3D2E;border:1px solid rgba(45,212,160,.3);color:#2DD4A0}
+.toast-error{background:#3D1010;border:1px solid rgba(239,68,68,.3);color:#EF4444}
+.toast-info{background:#0D2A3D;border:1px solid rgba(56,189,248,.3);color:#38BDF8}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0;transform:translateX(40px)}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:9000;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:90vw;max-height:90vh;overflow-y:auto;animation:scaleIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.sidebar{width:260px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);position:fixed;left:0;top:0;z-index:100;display:flex;flex-direction:column}
+.sidebar-logo{padding:20px;border-bottom:1px solid var(--border)}
+.sidebar-nav{flex:1;padding:12px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;color:var(--muted);transition:all .15s;margin-bottom:2px}
+.nav-item:hover{background:var(--card);color:var(--text)}
+.nav-item.active{background:var(--accent-bg);color:var(--accent);font-weight:600}
+.nav-item i{width:20px;text-align:center;font-size:15px}
+.nav-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--border);padding:16px 14px 6px;cursor:default}
+.nav-section:hover{background:transparent;color:var(--border)}
+.main-content{margin-left:260px;min-height:100vh;padding:24px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;filter:blur(40px);opacity:.15}
+.stat-card.gold::after{background:var(--accent)}
+.stat-card.green::after{background:var(--success)}
+.stat-card.blue::after{background:var(--info)}
+.stat-card.red::after{background:var(--danger)}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.product-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .15s;text-align:center;position:relative}
+.product-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.product-card .price{color:var(--accent);font-weight:700;font-size:15px;margin-top:6px}
+.product-card .name{font-size:12px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.product-card .stock-tag{font-size:10px;margin-top:4px}
+.cart-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(42,58,78,.4)}
+.cart-item:last-child{border-bottom:none}
+.qty-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;transition:all .15s}
+.qty-btn:hover{border-color:var(--accent);color:var(--accent)}
+.receipt-box{background:#fff;color:#000;padding:30px;font-family:'JetBrains Mono',monospace;font-size:12px;max-width:320px;margin:0 auto}
+.receipt-box .center{text-align:center}
+.receipt-box .bold{font-weight:700}
+.receipt-box .line{border-top:1px dashed #999;margin:8px 0}
+.receipt-box table{width:100%}
+.receipt-box th{text-align:left;padding:4px 0;font-size:11px;border:none;color:#555}
+.receipt-box td{padding:3px 0;font-size:12px;border:none;color:#000}
+.receipt-box .total-line td{font-weight:700;font-size:14px;border-top:2px solid #000;padding-top:8px}
+.login-bg{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden}
+.login-bg::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(212,149,42,.08),transparent 70%);top:-100px;right:-100px}
+.login-bg::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(45,212,160,.06),transparent 70%);bottom:-80px;left:-80px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;width:420px;max-width:95vw;position:relative;z-index:1}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:200px;padding-top:20px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(to top,var(--accent),var(--accent2));transition:height .5s ease;min-height:4px;position:relative}
+.bar:hover{filter:brightness(1.2)}
+.bar-label{font-size:10px;color:var(--muted);font-weight:600}
+.bar-value{font-size:10px;color:var(--accent);font-weight:700}
+.priv-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.priv-label{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;user-select:none}
+.priv-label:hover{border-color:var(--accent);background:var(--card)}
+.priv-label input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.priv-label i{width:18px;text-align:center;color:var(--accent);font-size:13px}
+.priv-label span{font-size:13px;font-weight:500}
+.currency-select{background:var(--bg);border:1px solid var(--border);color:var(--accent);padding:6px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;outline:none;font-family:'JetBrains Mono',monospace}
+.currency-select:focus{border-color:var(--accent)}
+.currency-select option{background:var(--card);color:var(--text)}
+@media print{
+  #app,#toasts{display:none!important}
+  #modal-root{display:block!important}
+  .modal-overlay{background:#fff!important;position:static!important;backdrop-filter:none!important}
+  .modal{border:none!important;box-shadow:none!important;background:#fff!important;max-width:100%!important;max-height:none!important;overflow:visible!important;border-radius:0!important}
+  .no-print{display:none!important}
+  .receipt-box{color:#000!important;max-width:100%!important}
+}
+@media(max-width:768px){.sidebar{width:60px}.sidebar .nav-text,.sidebar .nav-section,.sidebar-logo h2,.sidebar-logo p,.sidebar-user span,.sidebar .currency-wrap{display:none}.sidebar-logo{padding:12px}.main-content{margin-left:60px;padding:16px}.nav-item{justify-content:center;padding:10px}.nav-item i{width:auto}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast-container" id="toasts"></div>
+<div id="modal-root"></div>
+
+<script>
+/* ============================================
+   CONSTANTS & CONFIG
+   ============================================ */
+const DEFAULT_VAT = 15;
+const COMPANY = "SANTODD ENTERPRISES";
+const TRADING = "AGAPEO GENERAL DEALER";
+
+const CURRENCIES = [
+  { code: 'ZAR', symbol: 'R', name: 'South African Rand' },
+  { code: 'USD', symbol: '$', name: 'US Dollar' },
+  { code: 'GBP', symbol: '£', name: 'British Pound' },
+  { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'BWP', symbol: 'P', name: 'Botswana Pula' },
+  { code: 'NAD', symbol: '$', name: 'Namibian Dollar' },
+  { code: 'ZMW', symbol: 'ZK', name: 'Zambian Kwacha' },
+  { code: 'MWK', symbol: 'MK', name: 'Malawi Kwacha' },
+  { code: 'TZS', symbol: 'TSh', name: 'Tanzanian Shilling' },
+  { code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling' },
+];
+
+const ALL_PRIVILEGES = [
+  { key: 'pos', label: 'POS Terminal', icon: 'fa-cash-register', section: 'Point of Sale' },
+  { key: 'salesToday', label: 'Sales Today', icon: 'fa-chart-line', section: 'Point of Sale' },
+  { key: 'myTransactions', label: 'My Transactions', icon: 'fa-receipt', section: 'Point of Sale' },
+  { key: 'allTransactions', label: 'All Transactions', icon: 'fa-exchange-alt', section: 'Management' },
+  { key: 'addProducts', label: 'Add Products', icon: 'fa-box', section: 'Management' },
+  { key: 'stockBalance', label: 'Stock Balance', icon: 'fa-warehouse', section: 'Management' },
+  { key: 'receiveStock', label: 'Receive Stock', icon: 'fa-truck-loading', section: 'Management' },
+  { key: 'updatePrices', label: 'Update Prices', icon: 'fa-tag', section: 'Management' },
+  { key: 'profits', label: 'Profits', icon: 'fa-coins', section: 'Management' },
+  { key: 'weeklyRevenue', label: 'Weekly Revenue', icon: 'fa-chart-bar', section: 'Management' },
+  { key: 'addUsers', label: 'Add Users', icon: 'fa-user-plus', section: 'Management' },
+  { key: 'manageUsers', label: 'Manage All Users', icon: 'fa-users-cog', section: 'System Admin' },
+  { key: 'auditLogs', label: 'Audit Logs', icon: 'fa-clipboard-list', section: 'System Admin' },
+  { key: 'adjustVat', label: 'Adjust VAT', icon: 'fa-percentage', section: 'System Admin' },
+];
+
+const NAV_SECTIONS = [
+  { label: 'Point of Sale', keys: ['pos','salesToday','myTransactions'] },
+  { label: 'Management', keys: ['allTransactions','addProducts','stockBalance','receiveStock','updatePrices','profits','weeklyRevenue','addUsers'] },
+  { label: 'System Admin', keys: ['manageUsers','auditLogs','adjustVat'] },
+];
+
+/* ============================================
+   STORAGE HELPERS
+   ============================================ */
+function getStore(key, def) {
+  try { const d = localStorage.getItem('pos_' + key); return d ? JSON.parse(d) : def; }
+  catch(e) { return def; }
+}
+function setStore(key, val) { localStorage.setItem('pos_' + key, JSON.stringify(val)); }
+
+/* ============================================
+   DEFAULT DATA INITIALIZATION
+   ============================================ */
+if (!getStore('initialized', false)) {
+  const defaultUsers = [
+    { id: 1, username: 'admin', password: 'admin123', fullName: 'System Administrator', role: 'admin', active: true, privileges: null, created: new Date().toISOString() },
+    { id: 2, username: 'manager', password: 'manager123', fullName: 'Branch Manager', role: 'manager', active: true, privileges: ['pos','salesToday','myTransactions','allTransactions','addProducts','stockBalance','receiveStock','updatePrices','profits','weeklyRevenue','addUsers','manageUsers'], created: new Date().toISOString() },
+    { id: 3, username: 'supervisor', password: 'super123', fullName: 'Floor Supervisor', role: 'supervisor', active: true, privileges: ['pos','salesToday','myTransactions','stockBalance'], created: new Date().toISOString() },
+    { id: 4, username: 'cashier1', password: 'cash123', fullName: 'John Cashier', role: 'cashier', active: true, privileges: ['pos','salesToday','myTransactions'], created: new Date().toISOString() }
+  ];
+  const defaultProducts = [
+    { id: 1, name: 'White Bread', barcode: '1001', price: 12.50, costPrice: 9.00, stock: 50, category: 'Bakery', created: new Date().toISOString() },
+    { id: 2, name: 'Full Cream Milk 1L', barcode: '1002', price: 18.99, costPrice: 14.00, stock: 35, category: 'Dairy', created: new Date().toISOString() },
+    { id: 3, name: 'Sugar 1kg', barcode: '1003', price: 22.00, costPrice: 17.50, stock: 40, category: 'Groceries', created: new Date().toISOString() },
+    { id: 4, name: 'Cooking Oil 750ml', barcode: '1004', price: 35.00, costPrice: 27.00, stock: 25, category: 'Groceries', created: new Date().toISOString() },
+    { id: 5, name: 'Rice 2kg', barcode: '1005', price: 42.00, costPrice: 33.00, stock: 30, category: 'Groceries', created: new Date().toISOString() },
+    { id: 6, name: 'Eggs (Dozen)', barcode: '1006', price: 28.00, costPrice: 22.00, stock: 20, category: 'Dairy', created: new Date().toISOString() },
+    { id: 7, name: 'Coca-Cola 330ml', barcode: '1007', price: 10.00, costPrice: 7.50, stock: 100, category: 'Beverages', created: new Date().toISOString() },
+    { id: 8, name: 'Maize Meal 5kg', barcode: '1008', price: 55.00, costPrice: 42.00, stock: 20, category: 'Groceries', created: new Date().toISOString() },
+    { id: 9, name: 'Soap Bar', barcode: '1009', price: 8.50, costPrice: 5.50, stock: 60, category: 'Personal Care', created: new Date().toISOString() },
+    { id: 10, name: 'Cigarettes (Box)', barcode: '1010', price: 45.00, costPrice: 38.00, stock: 15, category: 'Tobacco', created: new Date().toISOString() },
+    { id: 11, name: 'Chips 150g', barcode: '1011', price: 7.50, costPrice: 5.00, stock: 80, category: 'Snacks', created: new Date().toISOString() },
+    { id: 12, name: 'Chicken Pieces 1kg', barcode: '1012', price: 65.00, costPrice: 50.00, stock: 15, category: 'Meat', created: new Date().toISOString() }
+  ];
+  setStore('users', defaultUsers);
+  setStore('products', defaultProducts);
+  setStore('transactions', []);
+  setStore('auditLogs', []);
+  setStore('vatRate', DEFAULT_VAT);
+  setStore('currency', 0);
+  setStore('initialized', true);
+}
+
+// Migration: ensure all users have privileges field
+(function migrateUsers() {
+  const users = getStore('users', []);
+  const roleDefaults = {
+    admin: null,
+    manager: ['pos','salesToday','myTransactions','allTransactions','addProducts','stockBalance','receiveStock','updatePrices','profits','weeklyRevenue','addUsers','manageUsers'],
+    supervisor: ['pos','salesToday','myTransactions','stockBalance'],
+    cashier: ['pos','salesToday','myTransactions']
+  };
+  let changed = false;
+  users.forEach(u => {
+    if (u.privileges === undefined) {
+      u.privileges = roleDefaults[u.role] || ['pos','salesToday','myTransactions'];
+      changed = true;
+    }
+  });
+  if (changed) setStore('users', users);
+})();
+
+/* ============================================
+   APP STATE
+   ============================================ */
+const app = {
+  currentUser: null,
+  currentPage: 'pos',
+  cart: [],
+  searchQuery: '',
+  pendingSale: null
+};
+
+/* ============================================
+   UTILITY FUNCTIONS
+   ============================================ */
+function genId() { return Date.now() + Math.floor(Math.random() * 1000); }
+function genReceiptNo() {
+  const t = getStore('transactions', []);
+  return 'RCP' + String(t.length + 1).padStart(6, '0');
+}
+function getCurrencySymbol() {
+  const idx = getStore('currency', 0);
+  return CURRENCIES[idx]?.symbol || 'R';
+}
+function getCurrencyCode() {
+  const idx = getStore('currency', 0);
+  return CURRENCIES[idx]?.code || 'ZAR';
+}
+function formatMoney(n) { return getCurrencySymbol() + ' ' + Number(n).toFixed(2); }
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-ZA', { day:'2-digit', month:'short', year:'numeric' });
+}
+function formatTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleTimeString('en-ZA', { hour:'2-digit', minute:'2-digit' });
+}
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+function toast(msg, type='success') {
+  const c = document.getElementById('toasts');
+  const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle' };
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
+  c.appendChild(el);
+  setTimeout(() => { el.style.animation = 'fadeOut .3s ease forwards'; setTimeout(() => el.remove(), 300); }, 3000);
+}
+
+function addAudit(action, details) {
+  if (!app.currentUser) return;
+  const logs = getStore('auditLogs', []);
+  logs.unshift({ id: genId(), userId: app.currentUser.id, userName: app.currentUser.fullName, role: app.currentUser.role, action, details, timestamp: new Date().toISOString() });
+  if (logs.length > 500) logs.length = 500;
+  setStore('auditLogs', logs);
+}
+
+function showModal(html) {
+  document.getElementById('modal-root').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`;
+}
+function closeModal() { document.getElementById('modal-root').innerHTML = ''; }
+
+/* ============================================
+   PRIVILEGE-BASED ACCESS CONTROL
+   ============================================ */
+function hasAccess(feature) {
+  if (!app.currentUser) return false;
+  // Admin always has full access
+  if (app.currentUser.role === 'admin') return true;
+  // Others: check their privileges array
+  const privs = app.currentUser.privileges || [];
+  return privs.includes(feature);
+}
+
+function changeCurrency(idx) {
+  setStore('currency', parseInt(idx));
+  // Refresh currentUser from store to pick up any changes
+  const users = getStore('users', []);
+  const u = users.find(x => x.id === app.currentUser.id);
+  if (u) app.currentUser = u;
+  render();
+}
+
+/* ============================================
+   RENDER ENGINE
+   ============================================ */
+function render() {
+  const root = document.getElementById('app');
+  if (!app.currentUser) { root.innerHTML = renderLogin(); bindLogin(); return; }
+  root.innerHTML = renderLayout();
+  renderPage();
+}
+
+function renderLogin() {
+  return `
+  <div class="login-bg">
+    <div class="login-card">
+      <div style="text-align:center;margin-bottom:30px">
+        <div style="width:56px;height:56px;border-radius:14px;background:var(--accent-bg);border:1px solid rgba(212,149,42,.3);display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <i class="fas fa-store" style="font-size:24px;color:var(--accent)"></i>
+        </div>
+        <h1 style="font-size:20px;font-weight:700;letter-spacing:-.5px">${COMPANY}</h1>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px">${TRADING}</p>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px">USERNAME</label>
+        <input type="text" id="login-user" placeholder="Enter username" autocomplete="off">
+      </div>
+      <div style="margin-bottom:24px">
+        <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px">PASSWORD</label>
+        <input type="password" id="login-pass" placeholder="Enter password">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:15px" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> Sign In
+      </button>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);text-align:center">
+        <p style="font-size:11px;color:var(--muted)">Point of Sale System v2.0</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindLogin() {
+  document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('login-user').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-pass').focus(); });
+  setTimeout(() => document.getElementById('login-user')?.focus(), 100);
+}
+
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if (!u || !p) { toast('Please enter username and password', 'error'); return; }
+  const users = getStore('users', []);
+  const user = users.find(x => x.username === u && x.password === p && x.active);
+  if (!user) { toast('Invalid credentials or account disabled', 'error'); return; }
+  app.currentUser = user;
+  app.cart = [];
+  app.currentPage = 'pos';
+  addAudit('Login', `${user.fullName} logged in as ${user.role}`);
+  toast(`Welcome, ${user.fullName}`, 'success');
+  render();
+}
+
+/* ============================================
+   LAYOUT & NAVIGATION (privilege-driven)
+   ============================================ */
+function renderLayout() {
+  const u = app.currentUser;
+  const roleBadge = `badge badge-${u.role}`;
+  const curIdx = getStore('currency', 0);
+
+  // Build nav HTML from privileges - only show items user has access to
+  let navHtml = '';
+  NAV_SECTIONS.forEach(section => {
+    const visibleItems = section.keys.filter(key => hasAccess(key));
+    if (visibleItems.length === 0) return; // Skip entire section if no items visible
+    navHtml += `<div class="nav-section nav-text">${section.label}</div>`;
+    visibleItems.forEach(key => {
+      const priv = ALL_PRIVILEGES.find(p => p.key === key);
+      if (!priv) return;
+      const active = app.currentPage === key ? ' active' : '';
+      navHtml += `<div class="nav-item${active}" onclick="navigate('${key}')"><i class="fas ${priv.icon}"></i><span class="nav-text">${priv.label}</span></div>`;
+    });
+  });
+
+  return `
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fas fa-store" style="color:#0C1117;font-size:16px"></i>
+        </div>
+        <div class="nav-text">
+          <h2 style="font-size:14px;font-weight:700;letter-spacing:-.3px;line-height:1.2">${COMPANY}</h2>
+          <p style="font-size:10px;color:var(--muted)">${TRADING}</p>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">${navHtml}</nav>
+    <div class="currency-wrap" style="padding:10px 14px;border-top:1px solid var(--border)">
+      <label style="font-size:10px;font-weight:600;color:var(--border);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Currency</label>
+      <select class="currency-select" style="width:100%" onchange="changeCurrency(this.value)">
+        ${CURRENCIES.map((c, i) => `<option value="${i}"${i === curIdx ? ' selected' : ''}>${c.symbol} - ${c.code} (${c.name})</option>`).join('')}
+      </select>
+    </div>
+    <div style="padding:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i class="fas fa-user" style="font-size:13px;color:var(--muted)"></i>
+      </div>
+      <div class="nav-text" style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.fullName}</div>
+        <span class="${roleBadge}" style="font-size:9px">${u.role}</span>
+      </div>
+      <button onclick="doLogout()" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:6px" title="Logout">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </aside>
+  <main class="main-content" id="main-area"></main>`;
+}
+
+function navigate(page) {
+  app.currentPage = page;
+  app.searchQuery = '';
+  render();
+}
+
+function renderPage() {
+  const area = document.getElementById('main-area');
+  if (!area) return;
+  const p = app.currentPage;
+  const pages = {
+    pos: renderPOS,
+    salesToday: renderSalesToday,
+    myTransactions: renderMyTransactions,
+    allTransactions: renderAllTransactions,
+    addProducts: renderAddProducts,
+    stockBalance: renderStockBalance,
+    receiveStock: renderReceiveStock,
+    updatePrices: renderUpdatePrices,
+    profits: renderProfits,
+    weeklyRevenue: renderWeeklyRevenue,
+    addUsers: renderAddUsers,
+    manageUsers: renderManageUsers,
+    auditLogs: renderAuditLogs,
+    adjustVat: renderAdjustVat
+  };
+  area.innerHTML = (pages[p] || renderPOS)();
+  if (p === 'pos') bindPOS();
+}
+
+function doLogout() {
+  addAudit('Logout', `${app.currentUser.fullName} logged out`);
+  app.currentUser = null;
+  app.cart = [];
+  render();
+}
+
+/* ============================================
+   POS TERMINAL
+   ============================================ */
+function renderPOS() {
+  const vatRate = getStore('vatRate', DEFAULT_VAT);
+  const subtotal = app.cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const vatAmt = subtotal * (vatRate / 100);
+  const total = subtotal + vatAmt;
+  const products = getStore('products', []);
+  const q = app.searchQuery.toLowerCase();
+  const filtered = q ? products.filter(p => p.name.toLowerCase().includes(q) || p.barcode.includes(q) || p.category.toLowerCase().includes(q)) : products;
+
+  return `
+  <div class="top-bar">
+    <div>
+      <h1 style="font-size:22px;font-weight:700">POS Terminal</h1>
+      <p style="font-size:13px;color:var(--muted)">${new Date().toLocaleDateString('en-ZA', {weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="badge badge-${app.currentUser.role}">${app.currentUser.role}</span>
+      <span style="color:var(--muted);font-size:13px">${app.currentUser.fullName}</span>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start">
+    <div>
+      <div style="position:relative;margin-bottom:16px">
+        <i class="fas fa-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px"></i>
+        <input type="text" id="pos-search" placeholder="Search products by name, barcode, or category..." style="padding-left:40px;font-size:14px" value="${app.searchQuery}" oninput="posSearch(this.value)">
+      </div>
+      <div class="product-grid" id="product-grid">
+        ${filtered.map(p => {
+          const inCart = app.cart.find(c => c.id === p.id);
+          const stockColor = p.stock <= 5 ? 'var(--danger)' : p.stock <= 15 ? 'var(--accent)' : 'var(--success)';
+          return `<div class="product-card${p.stock <= 0 ? ' opacity-50' : ''}" onclick="${p.stock > 0 ? `addToCart(${p.id})` : ''}">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-bg);display:inline-flex;align-items:center;justify-content:center;margin-bottom:6px">
+              <i class="fas fa-box" style="color:var(--accent);font-size:16px"></i>
+            </div>
+            ${inCart ? `<div style="position:absolute;top:6px;right:6px;background:var(--accent);color:#0C1117;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${inCart.qty}</div>` : ''}
+            <div class="price mono">${formatMoney(p.price)}</div>
+            <div class="name" title="${p.name}">${p.name}</div>
+            <div class="stock-tag" style="color:${stockColor}">${p.stock <= 0 ? 'OUT OF STOCK' : p.stock + ' in stock'}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${filtered.length === 0 ? '<div style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-search" style="font-size:32px;margin-bottom:10px;display:block"></i>No products found</div>' : ''}
+    </div>
+
+    <div class="card" style="position:sticky;top:24px">
+      <div class="card-header"><i class="fas fa-shopping-cart" style="color:var(--accent)"></i> Current Sale</div>
+      <div style="max-height:300px;overflow-y:auto;margin-bottom:16px" id="cart-items">
+        ${app.cart.length === 0 ? '<div style="text-align:center;padding:30px 0;color:var(--muted);font-size:13px"><i class="fas fa-shopping-basket" style="font-size:28px;display:block;margin-bottom:8px"></i>Cart is empty</div>' :
+          app.cart.map((item, idx) => `
+          <div class="cart-item">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.name}</div>
+              <div style="font-size:12px;color:var(--muted)">${formatMoney(item.price)} each</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button class="qty-btn" onclick="changeQty(${idx},-1)">-</button>
+              <span class="mono" style="width:28px;text-align:center;font-size:14px;font-weight:600">${item.qty}</span>
+              <button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
+            </div>
+            <div class="mono" style="width:70px;text-align:right;font-weight:600;font-size:14px">${formatMoney(item.price * item.qty)}</div>
+            <button onclick="removeFromCart(${idx})" style="background:none;border:none;color:var(--danger);cursor:pointer;padding:4px;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6">
+              <i class="fas fa-trash-alt" style="font-size:12px"></i>
+            </button>
+          </div>`).join('')}
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;color:var(--muted)">
+          <span>Subtotal</span><span class="mono">${formatMoney(subtotal)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;color:var(--muted)">
+          <span>VAT (${vatRate}%)</span><span class="mono">${formatMoney(vatAmt)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:16px;font-size:20px;font-weight:700">
+          <span>TOTAL</span><span class="mono" style="color:var(--accent)">${formatMoney(total)}</span>
+        </div>
+
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">AMOUNT RECEIVED</label>
+          <input type="number" id="amount-received" placeholder="0.00" step="0.01" min="0" style="font-size:18px;font-weight:700;text-align:center;padding:12px" oninput="calcChange()">
+        </div>
+        <div id="change-display" style="display:none;margin-bottom:14px;padding:10px;background:rgba(45,212,160,.1);border:1px solid rgba(45,212,160,.2);border-radius:8px;text-align:center">
+          <span style="font-size:11px;color:var(--success);font-weight:600">CHANGE</span>
+          <div class="mono" style="font-size:20px;font-weight:700;color:var(--success)" id="change-amount">${formatMoney(0)}</div>
+        </div>
+
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" style="flex:1" onclick="clearCart()"><i class="fas fa-times"></i> Clear</button>
+          <button class="btn btn-primary" style="flex:2;justify-content:center;padding:13px" onclick="viewReceipt()" ${app.cart.length === 0 ? 'disabled style="flex:2;justify-content:center;padding:13px;opacity:.5;cursor:not-allowed"' : ''}>
+            <i class="fas fa-eye"></i> View
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindPOS() {
+  document.getElementById('pos-search')?.focus();
+}
+
+function posSearch(val) {
+  app.searchQuery = val;
+  const grid = document.getElementById('product-grid');
+  if (!grid) return;
+  const products = getStore('products', []);
+  const q = val.toLowerCase();
+  const filtered = q ? products.filter(p => p.name.toLowerCase().includes(q) || p.barcode.includes(q) || p.category.toLowerCase().includes(q)) : products;
+  grid.innerHTML = filtered.map(p => {
+    const inCart = app.cart.find(c => c.id === p.id);
+    const stockColor = p.stock <= 5 ? 'var(--danger)' : p.stock <= 15 ? 'var(--accent)' : 'var(--success)';
+    return `<div class="product-card${p.stock <= 0 ? ' opacity-50' : ''}" onclick="${p.stock > 0 ? `addToCart(${p.id})` : ''}">
+      <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-bg);display:inline-flex;align-items:center;justify-content:center;margin-bottom:6px">
+        <i class="fas fa-box" style="color:var(--accent);font-size:16px"></i>
+      </div>
+      ${inCart ? `<div style="position:absolute;top:6px;right:6px;background:var(--accent);color:#0C1117;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${inCart.qty}</div>` : ''}
+      <div class="price mono">${formatMoney(p.price)}</div>
+      <div class="name" title="${p.name}">${p.name}</div>
+      <div class="stock-tag" style="color:${stockColor}">${p.stock <= 0 ? 'OUT OF STOCK' : p.stock + ' in stock'}</div>
+    </div>`;
+  }).join('');
+}
+
+function addToCart(productId) {
+  const products = getStore('products', []);
+  const p = products.find(x => x.id === productId);
+  if (!p || p.stock <= 0) { toast('Product out of stock', 'error'); return; }
+  const existing = app.cart.find(c => c.id === productId);
+  if (existing) {
+    if (existing.qty >= p.stock) { toast('Not enough stock', 'error'); return; }
+    existing.qty++;
+  } else {
+    app.cart.push({ id: p.id, name: p.name, price: p.price, costPrice: p.costPrice, qty: 1, maxStock: p.stock });
+  }
+  renderPage();
+}
+
+function changeQty(idx, delta) {
+  const item = app.cart[idx];
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) { app.cart.splice(idx, 1); }
+  else if (item.qty > item.maxStock) { item.qty = item.maxStock; toast('Not enough stock', 'error'); }
+  renderPage();
+}
+
+function removeFromCart(idx) { app.cart.splice(idx, 1); renderPage(); }
+function clearCart() { app.cart = []; renderPage(); }
+
+function calcChange() {
+  const vatRate = getStore('vatRate', DEFAULT_VAT);
+  const subtotal = app.cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const total = subtotal * (1 + vatRate / 100);
+  const received = parseFloat(document.getElementById('amount-received')?.value || 0);
+  const change = received - total;
+  const display = document.getElementById('change-display');
+  const amount = document.getElementById('change-amount');
+  const label = display?.querySelector('span');
+  if (display && amount && label) {
+    if (received > 0) {
+      display.style.display = 'block';
+      amount.textContent = formatMoney(Math.max(0, change));
+      if (change < 0) {
+        display.style.background = 'rgba(239,68,68,.1)';
+        display.style.borderColor = 'rgba(239,68,68,.2)';
+        amount.style.color = 'var(--danger)';
+        label.style.color = 'var(--danger)';
+        label.textContent = 'INSUFFICIENT';
+      } else {
+        display.style.background = 'rgba(45,212,160,.1)';
+        display.style.borderColor = 'rgba(45,212,160,.2)';
+        amount.style.color = 'var(--success)';
+        label.style.color = 'var(--success)';
+        label.textContent = 'CHANGE';
+      }
+    } else { display.style.display = 'none'; }
+  }
+}
+
+/* ============================================
+   VIEW RECEIPT (POS) - Preview before Print
+   ============================================ */
+function viewReceipt() {
+  if (app.cart.length === 0) return;
+  const vatRate = getStore('vatRate', DEFAULT_VAT);
+  const subtotal = app.cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const vatAmt = subtotal * (vatRate / 100);
+  const total = subtotal + vatAmt;
+  const received = parseFloat(document.getElementById('amount-received')?.value || 0);
+  if (received < total) { toast('Insufficient amount received', 'error'); return; }
+
+  // Build temporary receipt (not yet saved)
+  app.pendingSale = {
+    receiptNumber: genReceiptNo(),
+    items: app.cart.map(i => ({ productId: i.id, name: i.name, price: i.price, costPrice: i.costPrice, qty: i.qty, subtotal: i.price * i.qty })),
+    subtotal, vatRate, vatAmount: vatAmt, total,
+    amountReceived: received, change: received - total,
+    cashierId: app.currentUser.id, cashierName: app.currentUser.fullName,
+    date: new Date().toISOString()
+  };
+
+  showReceiptModal(app.pendingSale, true);
+}
+
+function showReceiptModal(txn, isPreview) {
+  const sym = getCurrencySymbol();
+  const html = `
+  <div style="padding:24px;min-width:380px">
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 style="font-size:16px;font-weight:700">${isPreview ? 'Receipt Preview' : 'Transaction Receipt'}</h3>
+    </div>
+    <div class="receipt-box">
+      <div class="center bold" style="font-size:14px">${COMPANY}</div>
+      <div class="center" style="font-size:11px;margin-bottom:2px">${TRADING}</div>
+      <div class="center" style="font-size:10px;color:#666">---------------------------------</div>
+      <div class="center" style="font-size:10px">Receipt: ${txn.receiptNumber}</div>
+      <div class="center" style="font-size:10px">${formatDate(txn.date)} ${formatTime(txn.date)}</div>
+      <div class="center" style="font-size:10px">Cashier: ${txn.cashierName}</div>
+      <div class="line"></div>
+      <table>
+        <tr><th>Item</th><th style="text-align:center">Qty</th><th style="text-align:right">Amount</th></tr>
+        ${txn.items.map(i => `<tr><td>${i.name}</td><td style="text-align:center">${i.qty}</td><td style="text-align:right">${sym}${(i.price * i.qty).toFixed(2)}</td></tr>`).join('')}
+      </table>
+      <div class="line"></div>
+      <table>
+        <tr><td>Subtotal</td><td style="text-align:right">${sym}${txn.subtotal.toFixed(2)}</td></tr>
+        <tr><td>VAT (${txn.vatRate}%)</td><td style="text-align:right">${sym}${txn.vatAmount.toFixed(2)}</td></tr>
+        <tr class="total-line"><td>TOTAL</td><td style="text-align:right">${sym}${txn.total.toFixed(2)}</td></tr>
+      </table>
+      <div class="line"></div>
+      <table>
+        <tr><td>Amount Received</td><td style="text-align:right">${sym}${txn.amountReceived.toFixed(2)}</td></tr>
+        <tr><td>Change</td><td style="text-align:right">${sym}${txn.change.toFixed(2)}</td></tr>
+      </table>
+      <div class="line"></div>
+      <div class="center" style="font-size:10px;margin-top:4px">Thank you for your purchase!</div>
+      <div class="center" style="font-size:9px;color:#999">Powered by ${COMPANY}</div>
+    </div>
+    <div class="no-print" style="display:flex;gap:10px;margin-top:20px;justify-content:center">
+      ${isPreview ? `
+        <button class="btn btn-primary" onclick="printAndProcess()"><i class="fas fa-print"></i> Print</button>
+        <button class="btn btn-secondary" onclick="cancelReceipt()"><i class="fas fa-times"></i> Cancel</button>
+      ` : `
+        <button class="btn btn-sm btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        <button class="btn btn-sm btn-secondary" onclick="closeModal()"><i class="fas fa-times"></i> Close</button>
+      `}
+    </div>
+  </div>`;
+  showModal(html);
+}
+
+function printAndProcess() {
+  // Trigger print
+  window.print();
+
+  // Process the pending sale
+  if (app.pendingSale) {
+    const sale = app.pendingSale;
+
+    // Deduct stock
+    const products = getStore('products', []);
+    sale.items.forEach(item => {
+      const p = products.find(x => x.id === item.productId);
+      if (p) p.stock = Math.max(0, p.stock - item.qty);
+    });
+    setStore('products', products);
+
+    // Save transaction
+    const txn = { ...sale, id: genId() };
+    const txns = getStore('transactions', []);
+    txns.unshift(txn);
+    setStore('transactions', txns);
+
+    addAudit('Sale', `Receipt ${txn.receiptNumber} - ${formatMoney(txn.total)} - ${txn.items.length} items`);
+    app.pendingSale = null;
+  }
+
+  // Clear cart and close modal
+  app.cart = [];
+  closeModal();
+  renderPage();
+  toast('Sale completed successfully', 'success');
+}
+
+function cancelReceipt() {
+  app.pendingSale = null;
+  closeModal();
+}
+
+/* ============================================
+   SALES TODAY
+   ============================================ */
+function renderSalesToday() {
+  const txns = getStore('transactions', []);
+  const today = todayStr();
+  const todayTxns = txns.filter(t => t.date.split('T')[0] === today);
+  const totalSales = todayTxns.reduce((s, t) => s + t.total, 0);
+  const totalItems = todayTxns.reduce((s, t) => s + t.items.reduce((ss, i) => ss + i.qty, 0), 0);
+
+  return `
+  <div class="top-bar">
+    <div><h1 style="font-size:22px;font-weight:700">Sales Today</h1><p style="font-size:13px;color:var(--muted)">${new Date().toLocaleDateString('en-ZA', {weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+    <div class="stat-card gold"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">TOTAL REVENUE</div><div class="mono" style="font-size:26px;font-weight:700;color:var(--accent)">${formatMoney(totalSales)}</div></div>
+    <div class="stat-card blue"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">TRANSACTIONS</div><div class="mono" style="font-size:26px;font-weight:700;color:var(--info)">${todayTxns.length}</div></div>
+    <div class="stat-card green"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">ITEMS SOLD</div><div class="mono" style="font-size:26px;font-weight:700;color:var(--success)">${totalItems}</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="fas fa-list" style="color:var(--accent)"></i> Today's Transactions</div>
+    ${todayTxns.length === 0 ? '<div style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-receipt" style="font-size:32px;display:block;margin-bottom:10px"></i>No transactions today</div>' : `
+    <div style="overflow-x:auto"><table>
+      <tr><th>Receipt #</th><th>Time</th><th>Items</th><th>Cashier</th><th>Total</th><th>Action</th></tr>
+      ${todayTxns.map(t => `<tr>
+        <td class="mono" style="color:var(--accent)">${t.receiptNumber}</td>
+        <td class="mono">${formatTime(t.date)}</td>
+        <td>${t.items.reduce((s,i)=>s+i.qty,0)}</td>
+        <td>${t.cashierName}</td>
+        <td class="mono" style="font-weight:600">${formatMoney(t.total)}</td>
+        <td><button class="btn btn-sm btn-secondary" onclick='viewPastReceipt(${JSON.stringify(t).replace(/'/g,"&#39;")})'><i class="fas fa-eye"></i> View</button></td>
+      </tr>`).join('')}
+    </table></div>`}
+  </div>`;
+}
+
+function viewPastReceipt(txn) {
+  showReceiptModal(txn, false);
+}
+
+/* ============================================
+   MY TRANSACTIONS (Today Only)
+   ============================================ */
+function renderMyTransactions() {
+  const today = todayStr();
+  const txns = getStore('transactions', []).filter(t => t.cashierId === app.currentUser.id && t.date.split('T')[0] === today);
+  const totalSales = txns.reduce((s, t) => s + t.total, 0);
+
+  return `
+  <div class="top-bar">
+    <div><h1 style="font-size:22px;font-weight:700">My Transactions</h1><p style="font-size:13px;color:var(--muted)">Your sales for today only</p></div>
+    <div class="stat-card gold" style="padding:14px 20px;display:flex;align-items:center;gap:12px"><div style="font-size:11px;color:var(--muted);font-weight:600">TODAY'S TOTAL</div><div class="mono" style="font-size:20px;font-weight:700;color:var(--accent)">${formatMoney(totalSales)}</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="fas fa-receipt" style="color:var(--accent)"></i> My Transactions Today (${txns.length})</div>
+    ${txns.length === 0 ? '<div style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-receipt" style="font-size:32px;display:block;margin-bottom:10px"></i>No transactions today</div>' : `
+    <div style="overflow-x:auto"><table>
+      <tr><th>Receipt #</th><th>Time</th><th>Items</th><th>Total</th><th>Action</th></tr>
+      ${txns.map(t => `<tr>
+        <td class="mono" style="color:var(--accent)">${t.receiptNumber}</td>
+        <td class="mono">${formatTime(t.date)}</td>
+        <td>${t.items.reduce((s,i)=>s+i.qty,0)}</td>
+        <td class="mono" style="font-weight:600">${formatMoney(t.total)}</td>
+        <td><button class="btn btn-sm btn-secondary" onclick='viewPastReceipt(${JSON.stringify(t).replace(/'/g,"&#39;")})'><i class="fas fa-eye"></i> View</button></td>
+      </tr>`).join('')}
+    </table></div>`}
+  </div>`;
+}
+
+/* ============================================
+   ALL TRANSACTIONS
+   ============================================ */
+function renderAllTransactions() {
+  const txns = getStore('transactions', []);
+  const totalSales = txns.reduce((s, t) => s + t.total, 0);
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">All Transactions</h1><p style="font-size:13px;color:var(--muted)">Complete transaction history for all cashiers</p></div>
+    <div class="stat-card gold" style="padding:14px 20px;display:flex;align-items:center;gap:12px"><div style="font-size:11px;color:var(--muted);font-weight:600">GRAND TOTAL</div><div class="mono" style="font-size:20px;font-weight:700;color:var(--accent)">${formatMoney(totalSales)}</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="fas fa-exchange-alt" style="color:var(--accent)"></i> All Shop Transactions (${txns.length})</div>
+    ${txns.length === 0 ? '<div style="text-align:center;padding:40px;color:var(--muted)">No transactions recorded</div>' : `
+    <div style="overflow-x:auto"><table>
+      <tr><th>Receipt #</th><th>Date</th><th>Time</th><th>Cashier</th><th>Items</th><th>Total</th><th>Action</th></tr>
+      ${txns.map(t => `<tr>
+        <td class="mono" style="color:var(--accent)">${t.receiptNumber}</td>
+        <td>${formatDate(t.date)}</td>
+        <td class="mono">${formatTime(t.date)}</td>
+        <td>${t.cashierName}</td>
+        <td>${t.items.reduce((s,i)=>s+i.qty,0)}</td>
+        <td class="mono" style="font-weight:600">${formatMoney(t.total)}</td>
+        <td><button class="btn btn-sm btn-secondary" onclick='viewPastReceipt(${JSON.stringify(t).replace(/'/g,"&#39;")})'><i class="fas fa-eye"></i> View</button></td>
+      </tr>`).join('')}
+    </table></div>`}
+  </div>`;
+}
+
+/* ============================================
+   ADD PRODUCTS
+   ============================================ */
+function renderAddProducts() {
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Add Products</h1><p style="font-size:13px;color:var(--muted)">Add new products to the system</p></div></div>
+  <div class="card" style="max-width:600px">
+    <div class="card-header"><i class="fas fa-box" style="color:var(--accent)"></i> New Product</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="grid-column:span 2"><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Product Name</label><input type="text" id="p-name" placeholder="e.g. White Bread"></div>
+      <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Barcode</label><input type="text" id="p-barcode" placeholder="e.g. 1013"></div>
+      <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Category</label>
+        <select id="p-category"><option>Bakery</option><option>Dairy</option><option>Groceries</option><option>Beverages</option><option>Snacks</option><option>Meat</option><option>Personal Care</option><option>Tobacco</option><option>Other</option></select>
+      </div>
+      <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Selling Price</label><input type="number" id="p-price" placeholder="0.00" step="0.01" min="0"></div>
+      <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Cost Price</label><input type="number" id="p-cost" placeholder="0.00" step="0.01" min="0"></div>
+      <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Initial Stock</label><input type="number" id="p-stock" placeholder="0" min="0"></div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:20px" onclick="saveProduct()"><i class="fas fa-plus-circle"></i> Add Product</button>
+  </div>`;
+}
+
+function saveProduct() {
+  const name = document.getElementById('p-name').value.trim();
+  const barcode = document.getElementById('p-barcode').value.trim();
+  const category = document.getElementById('p-category').value;
+  const price = parseFloat(document.getElementById('p-price').value);
+  const costPrice = parseFloat(document.getElementById('p-cost').value);
+  const stock = parseInt(document.getElementById('p-stock').value) || 0;
+  if (!name) { toast('Product name is required', 'error'); return; }
+  if (!barcode) { toast('Barcode is required', 'error'); return; }
+  if (isNaN(price) || price <= 0) { toast('Valid selling price is required', 'error'); return; }
+  if (isNaN(costPrice) || costPrice <= 0) { toast('Valid cost price is required', 'error'); return; }
+  const products = getStore('products', []);
+  if (products.find(p => p.barcode === barcode)) { toast('Barcode already exists', 'error'); return; }
+  products.push({ id: genId(), name, barcode, price, costPrice, stock, category, created: new Date().toISOString() });
+  setStore('products', products);
+  addAudit('Add Product', `Added "${name}" (${formatMoney(price)}) - ${stock} units`);
+  toast(`Product "${name}" added successfully`, 'success');
+  renderPage();
+}
+
+/* ============================================
+   STOCK BALANCE
+   ============================================ */
+function renderStockBalance() {
+  const products = getStore('products', []);
+  const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0);
+  const lowStock = products.filter(p => p.stock > 0 && p.stock <= 5).length;
+  const outOfStock = products.filter(p => p.stock <= 0).length;
+
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Stock Balance</h1><p style="font-size:13px;color:var(--muted)">Current inventory overview</p></div></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+    <div class="stat-card gold"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">STOCK VALUE</div><div class="mono" style="font-size:22px;font-weight:700;color:var(--accent)">${formatMoney(totalValue)}</div></div>
+    <div class="stat-card red"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">LOW STOCK (1-5)</div><div class="mono" style="font-size:22px;font-weight:700;color:var(--danger)">${lowStock}</div></div>
+    <div class="stat-card blue"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">OUT OF STOCK</div><div class="mono" style="font-size:22px;font-weight:700;color:var(--info)">${outOfStock}</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="fas fa-warehouse" style="color:var(--accent)"></i> All Products (${products.length})</div>
+    <div style="overflow-x:auto"><table>
+      <tr><th>Product</th><th>Barcode</th><th>Category</th><th>Cost</th><th>Price</th><th>Stock</th><th>Value</th></tr>
+      ${products.map(p => {
+        const sc = p.stock <= 0 ? 'var(--danger)' : p.stock <= 5 ? 'var(--accent)' : 'var(--success)';
+        return `<tr>
+          <td style="font-weight:600">${p.name}</td>
+          <td class="mono" style="color:var(--muted)">${p.barcode}</td>
+          <td><span style="font-size:12px;color:var(--muted)">${p.category}</span></td>
+          <td class="mono">${formatMoney(p.costPrice)}</td>
+          <td class="mono" style="font-weight:600">${formatMoney(p.price)}</td>
+          <td><span class="mono" style="color:${sc};font-weight:600">${p.stock}</span></td>
+          <td class="mono">${formatMoney(p.price * p.stock)}</td>
+        </tr>`;
+      }).join('')}
+    </table></div>
+  </div>`;
+}
+
+/* ============================================
+   RECEIVE STOCK
+   ============================================ */
+function renderReceiveStock() {
+  const products = getStore('products', []);
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Receive Stock</h1><p style="font-size:13px;color:var(--muted)">Add received quantities to existing stock</p></div></div>
+  <div class="card" style="max-width:700px">
+    <div class="card-header"><i class="fas fa-truck-loading" style="color:var(--accent)"></i> Stock Receiving</div>
+    <div style="margin-bottom:14px"><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Select Product</label>
+      <select id="rcv-product" onchange="updateRcvInfo()">
+        <option value="">-- Choose Product --</option>
+        ${products.map(p => `<option value="${p.id}">${p.name} (${p.barcode}) - Current Stock: ${p.stock}</option>`).join('')}
+      </select>
+    </div>
+    <div id="rcv-info" style="display:none;margin-bottom:14px;padding:14px;background:var(--bg2);border-radius:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:13px">
+        <div><span style="color:var(--muted)">Cost Price:</span> <span class="mono" id="rcv-cost"></span></div>
+        <div><span style="color:var(--muted)">Selling Price:</span> <span class="mono" id="rcv-price"></span></div>
+        <div><span style="color:var(--muted)">Current Stock:</span> <span class="mono" id="rcv-stock"></span></div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px"><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Quantity Received</label>
+      <input type="number" id="rcv-qty" placeholder="0" min="1">
+    </div>
+    <button class="btn btn-primary" onclick="processReceiveStock()"><i class="fas fa-check"></i> Update Stock</button>
+  </div>`;
+}
+
+function updateRcvInfo() {
+  const pid = parseInt(document.getElementById('rcv-product').value);
+  const info = document.getElementById('rcv-info');
+  if (!pid) { info.style.display = 'none'; return; }
+  const products = getStore('products', []);
+  const p = products.find(x => x.id === pid);
+  if (!p) { info.style.display = 'none'; return; }
+  document.getElementById('rcv-cost').textContent = formatMoney(p.costPrice);
+  document.getElementById('rcv-price').textContent = formatMoney(p.price);
+  document.getElementById('rcv-stock').textContent = p.stock;
+  info.style.display = 'block';
+}
+
+function processReceiveStock() {
+  const pid = parseInt(document.getElementById('rcv-product').value);
+  const qty = parseInt(document.getElementById('rcv-qty').value);
+  if (!pid) { toast('Select a product', 'error'); return; }
+  if (!qty || qty <= 0) { toast('Enter a valid quantity', 'error'); return; }
+  const products = getStore('products', []);
+  const p = products.find(x => x.id === pid);
+  if (!p) return;
+  p.stock += qty;
+  setStore('products', products);
+  addAudit('Receive Stock', `Received ${qty} units of "${p.name}" (new stock: ${p.stock})`);
+  toast(`Received ${qty} units of ${p.name}`, 'success');
+  renderPage();
+}
+
+/* ============================================
+   UPDATE PRICES
+   ============================================ */
+function renderUpdatePrices() {
+  const products = getStore('products', []);
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Update Prices</h1><p style="font-size:13px;color:var(--muted)">Modify selling and cost prices</p></div></div>
+  <div class="card" style="max-width:700px">
+    <div class="card-header"><i class="fas fa-tag" style="color:var(--accent)"></i> Price Adjustment</div>
+    <div style="margin-bottom:14px"><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Select Product</label>
+      <select id="up-product" onchange="updateUpInfo()">
+        <option value="">-- Choose Product --</option>
+        ${products.map(p => `<option value="${p.id}">${p.name} (${p.barcode})</option>`).join('')}
+      </select>
+    </div>
+    <div id="up-info" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">New Selling Price</label><input type="number" id="up-price" step="0.01" min="0"></div>
+        <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">New Cost Price</label><input type="number" id="up-cost" step="0.01" min="0"></div>
+      </div>
+      <button class="btn btn-primary" onclick="processUpdatePrice()"><i class="fas fa-save"></i> Update Prices</button>
+    </div>
+  </div>`;
+}
+
+function updateUpInfo() {
+  const pid = parseInt(document.getElementById('up-product').value);
+  const info = document.getElementById('up-info');
+  if (!pid) { info.style.display = 'none'; return; }
+  const products = getStore('products', []);
+  const p = products.find(x => x.id === pid);
+  if (!p) { info.style.display = 'none'; return; }
+  document.getElementById('up-price').value = p.price;
+  document.getElementById('up-cost').value = p.costPrice;
+  info.style.display = 'block';
+}
+
+function processUpdatePrice() {
+  const pid = parseInt(document.getElementById('up-product').value);
+  const price = parseFloat(document.getElementById('up-price').value);
+  const cost = parseFloat(document.getElementById('up-cost').value);
+  if (!pid) { toast('Select a product', 'error'); return; }
+  if (isNaN(price) || price <= 0) { toast('Valid selling price required', 'error'); return; }
+  if (isNaN(cost) || cost <= 0) { toast('Valid cost price required', 'error'); return; }
+  const products = getStore('products', []);
+  const p = products.find(x => x.id === pid);
+  if (!p) return;
+  const oldPrice = p.price;
+  const oldCost = p.costPrice;
+  p.price = price;
+  p.costPrice = cost;
+  setStore('products', products);
+  addAudit('Update Price', `"${p.name}": ${formatMoney(oldPrice)} -> ${formatMoney(price)} (cost: ${formatMoney(oldCost)} -> ${formatMoney(cost)})`);
+  toast(`Prices updated for ${p.name}`, 'success');
+  renderPage();
+}
+
+/* ============================================
+   PROFITS
+   ============================================ */
+function renderProfits() {
+  const txns = getStore('transactions', []);
+  let totalRevenue = 0, totalCost = 0, totalProfit = 0;
+  txns.forEach(t => {
+    totalRevenue += t.total;
+    t.items.forEach(i => { totalCost += (i.costPrice || 0) * i.qty; });
+  });
+  totalProfit = totalRevenue - totalCost;
+  const margin = totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).toFixed(1) : '0.0';
+
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Profits</h1><p style="font-size:13px;color:var(--muted)">Revenue, cost and profit analysis</p></div></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+    <div class="stat-card blue"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">TOTAL REVENUE</div><div class="mono" style="font-size:22px;font-weight:700;color:var(--info)">${formatMoney(totalRevenue)}</div></div>
+    <div class="stat-card red"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">TOTAL COST</div><div class="mono" style="font-size:22px;font-weight:700;color:var(--danger)">${formatMoney(totalCost)}</div></div>
+    <div class="stat-card gold"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">NET PROFIT (${margin}%)</div><div class="mono" style="font-size:22px;font-weight:700;color:var(--accent)">${formatMoney(totalProfit)}</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="fas fa-coins" style="color:var(--accent)"></i> Profit Breakdown by Transaction</div>
+    ${txns.length === 0 ? '<div style="text-align:center;padding:40px;color:var(--muted)">No transactions to analyze</div>' : `
+    <div style="overflow-x:auto"><table>
+      <tr><th>Receipt #</th><th>Date</th><th>Revenue</th><th>Cost</th><th>Profit</th><th>Margin</th></tr>
+      ${txns.map(t => {
+        const cost = t.items.reduce((s, i) => s + (i.costPrice || 0) * i.qty, 0);
+        const profit = t.total - cost;
+        const m = t.total > 0 ? ((profit / t.total) * 100).toFixed(1) : '0.0';
+        return `<tr>
+          <td class="mono" style="color:var(--accent)">${t.receiptNumber}</td>
+          <td>${formatDate(t.date)}</td>
+          <td class="mono">${formatMoney(t.total)}</td>
+          <td class="mono" style="color:var(--danger)">${formatMoney(cost)}</td>
+          <td class="mono" style="color:${profit >= 0 ? 'var(--success)' : 'var(--danger)'};font-weight:600">${formatMoney(profit)}</td>
+          <td class="mono">${m}%</td>
+        </tr>`;
+      }).join('')}
+    </table></div>`}
+  </div>`;
+}
+
+/* ============================================
+   WEEKLY REVENUE
+   ============================================ */
+function renderWeeklyRevenue() {
+  const txns = getStore('transactions', []);
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const ds = d.toISOString().split('T')[0];
+    const dayTxns = txns.filter(t => t.date.split('T')[0] === ds);
+    const total = dayTxns.reduce((s, t) => s + t.total, 0);
+    days.push({ date: ds, label: d.toLocaleDateString('en-ZA', { weekday: 'short' }), total, count: dayTxns.length });
+  }
+  const maxTotal = Math.max(...days.map(d => d.total), 1);
+  const weekTotal = days.reduce((s, d) => s + d.total, 0);
+
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Weekly Revenue</h1><p style="font-size:13px;color:var(--muted)">Last 7 days performance</p></div>
+    <div class="stat-card gold" style="padding:14px 20px;display:flex;align-items:center;gap:12px"><div style="font-size:11px;color:var(--muted);font-weight:600">WEEK TOTAL</div><div class="mono" style="font-size:20px;font-weight:700;color:var(--accent)">${formatMoney(weekTotal)}</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="fas fa-chart-bar" style="color:var(--accent)"></i> Daily Revenue</div>
+    <div class="bar-chart">
+      ${days.map(d => {
+        const h = Math.max(4, (d.total / maxTotal) * 180);
+        const isToday = d.date === todayStr();
+        return `<div class="bar-col">
+          <div class="bar-value">${d.total > 0 ? formatMoney(d.total) : ''}</div>
+          <div class="bar" style="height:${h}px;${isToday ? 'background:linear-gradient(to top,var(--success),#5EEAD4)' : ''}"></div>
+          <div class="bar-label" style="${isToday ? 'color:var(--success);font-weight:700' : ''}">${d.label}</div>
+          <div style="font-size:9px;color:var(--muted)">${d.count} txns</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+/* ============================================
+   ADD USERS
+   ============================================ */
+function renderAddUsers() {
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Add Users</h1><p style="font-size:13px;color:var(--muted)">Create new system users</p></div></div>
+  <div class="card" style="max-width:600px">
+    <div class="card-header"><i class="fas fa-user-plus" style="color:var(--accent)"></i> New User</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="grid-column:span 2"><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Full Name</label><input type="text" id="nu-name" placeholder="e.g. Jane Doe"></div>
+      <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Username</label><input type="text" id="nu-user" placeholder="e.g. janedoe"></div>
+      <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Password</label><input type="text" id="nu-pass" placeholder="e.g. pass123"></div>
+      <div><label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Role</label>
+        <select id="nu-role">
+          <option value="cashier">Cashier</option>
+          <option value="supervisor">Supervisor</option>
+          <option value="manager">Manager</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:14px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)">
+      <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:10px">ASSIGN PRIVILEGES</label>
+      <div class="priv-grid">
+        ${ALL_PRIVILEGES.map(p => `
+          <label class="priv-label">
+            <input type="checkbox" class="nu-priv" value="${p.key}">
+            <i class="fas ${p.icon}"></i>
+            <span>${p.label}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:20px" onclick="saveNewUser()"><i class="fas fa-plus-circle"></i> Create User</button>
+  </div>`;
+}
+
+function saveNewUser() {
+  const fullName = document.getElementById('nu-name').value.trim();
+  const username = document.getElementById('nu-user').value.trim();
+  const password = document.getElementById('nu-pass').value;
+  const role = document.getElementById('nu-role').value;
+  if (!fullName) { toast('Full name is required', 'error'); return; }
+  if (!username) { toast('Username is required', 'error'); return; }
+  if (!password) { toast('Password is required', 'error'); return; }
+  const users = getStore('users', []);
+  if (users.find(u => u.username === username)) { toast('Username already exists', 'error'); return; }
+  const privs = [];
+  document.querySelectorAll('.nu-priv').forEach(cb => { if (cb.checked) privs.push(cb.value); });
+  if (privs.length === 0) { toast('Select at least one privilege', 'error'); return; }
+  users.push({ id: genId(), username, password, fullName, role, active: true, privileges: privs, created: new Date().toISOString() });
+  setStore('users', users);
+  addAudit('Add User', `Created user "${fullName}" (${username}) - Role: ${role} - Privileges: ${privs.join(', ')}`);
+  toast(`User "${fullName}" created successfully`, 'success');
+  renderPage();
+}
+
+/* ============================================
+   MANAGE USERS (Privileges & Remove)
+   ============================================ */
+function renderManageUsers() {
+  const users = getStore('users', []);
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Manage All Users</h1><p style="font-size:13px;color:var(--muted)">Edit privileges, remove users</p></div></div>
+  <div class="card">
+    <div class="card-header"><i class="fas fa-users-cog" style="color:var(--accent)"></i> System Users (${users.length})</div>
+    ${users.length === 0 ? '<div style="text-align:center;padding:40px;color:var(--muted)">No users found</div>' : `
+    <div style="overflow-x:auto"><table>
+      <tr><th>Full Name</th><th>Username</th><th>Role</th><th>Status</th><th>Privileges</th><th>Actions</th></tr>
+      ${users.map(u => {
+        const privCount = u.role === 'admin' ? 'All (Admin)' : `${(u.privileges || []).length} assigned`;
+        return `<tr>
+          <td style="font-weight:600">${u.fullName}</td>
+          <td class="mono" style="color:var(--muted)">${u.username}</td>
+          <td><span class="badge badge-${u.role}">${u.role}</span></td>
+          <td>${u.active ? '<span style="color:var(--success);font-weight:600"><i class="fas fa-check-circle"></i> Active</span>' : '<span style="color:var(--danger);font-weight:600"><i class="fas fa-times-circle"></i> Disabled</span>'}</td>
+          <td style="font-size:12px;color:var(--muted)">${privCount}</td>
+          <td>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-sm btn-secondary" onclick='editUserPrivileges(${u.id})' ${u.role === 'admin' && app.currentUser.role !== 'admin' ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}><i class="fas fa-key"></i> Privileges</button>
+              ${u.id !== app.currentUser.id ? `<button class="btn btn-sm btn-danger" onclick='removeUser(${u.id})' ${u.role === 'admin' ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}><i class="fas fa-trash-alt"></i> Remove</button>` : '<span style="font-size:11px;color:var(--muted);font-style:italic">(you)</span>'}
+            </div>
+          </td>
+        </tr>`;
+      }).join('')}
+    </table></div>`}
+  </div>`;
+}
+
+function editUserPrivileges(userId) {
+  const users = getStore('users', []);
+  const user = users.find(u => u.id === userId);
+  if (!user) return;
+
+  const privs = user.privileges || [];
+  const html = `
+  <div style="padding:24px;min-width:440px">
+    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:20px">
+      <div>
+        <h3 style="font-size:18px;font-weight:700">Edit Privileges</h3>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px">${user.fullName} <span class="badge badge-${user.role}" style="margin-left:6px">${user.role}</span></p>
+      </div>
+      <button class="btn btn-sm btn-secondary" onclick="closeModal()" style="margin-top:-4px"><i class="fas fa-times"></i></button>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Tick every privilege this user should have access to. Unticked items will not appear in their profile at all.</p>
+    <div class="priv-grid" id="edit-priv-grid">
+      ${ALL_PRIVILEGES.map(p => `
+        <label class="priv-label">
+          <input type="checkbox" class="edit-priv-cb" value="${p.key}" ${privs.includes(p.key) ? 'checked' : ''}>
+          <i class="fas ${p.icon}"></i>
+          <span>${p.label}</span>
+        </label>
+      `).join('')}
+    </div>
+    <div style="display:flex;gap:10px;margin-top:24px;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePrivileges(${userId})"><i class="fas fa-save"></i> Save Privileges</button>
+    </div>
+  </div>`;
+  showModal(html);
+}
+
+function savePrivileges(userId) {
+  const checkboxes = document.querySelectorAll('.edit-priv-cb');
+  const privs = [];
+  checkboxes.forEach(cb => { if (cb.checked) privs.push(cb.value); });
+  if (privs.length === 0) { toast('User must have at least one privilege', 'error'); return; }
+  const users = getStore('users', []);
+  const user = users.find(u => u.id === userId);
+  if (!user) return;
+  user.privileges = privs;
+  setStore('users', users);
+  // Update current user in memory if editing self
+  if (userId === app.currentUser.id) app.currentUser = user;
+  addAudit('Update Privileges', `Updated privileges for ${user.fullName} (${user.username}): ${privs.join(', ')}`);
+  toast(`Privileges updated for ${user.fullName}`, 'success');
+  closeModal();
+  renderPage();
+}
+
+function removeUser(userId) {
+  if (userId === app.currentUser.id) { toast('Cannot remove yourself', 'error'); return; }
+  const users = getStore('users', []);
+  const user = users.find(u => u.id === userId);
+  if (!user) return;
+  if (user.role === 'admin') { toast('Cannot remove admin user', 'error'); return; }
+
+  showModal(`
+  <div style="padding:24px;min-width:380px;text-align:center">
+    <div style="width:60px;height:60px;border-radius:50%;background:rgba(239,68,68,.15);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px">
+      <i class="fas fa-exclamation-triangle" style="font-size:26px;color:var(--danger)"></i>
+    </div>
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Remove User</h3>
+    <p style="color:var(--muted);margin-bottom:24px;line-height:1.6">Are you sure you want to permanently remove<br><strong style="color:var(--text)">${user.fullName}</strong> (${user.username})?<br>This action cannot be undone.</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn btn-secondary" onclick="closeModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn btn-danger" onclick="confirmRemoveUser(${userId})"><i class="fas fa-trash-alt"></i> Remove User</button>
+    </div>
+  </div>`);
+}
+
+function confirmRemoveUser(userId) {
+  let users = getStore('users', []);
+  const user = users.find(u => u.id === userId);
+  const name = user?.fullName || 'Unknown';
+  users = users.filter(u => u.id !== userId);
+  setStore('users', users);
+  addAudit('Remove User', `Removed user "${name}"`);
+  toast(`User "${name}" has been removed`, 'success');
+  closeModal();
+  renderPage();
+}
+
+/* ============================================
+   AUDIT LOGS
+   ============================================ */
+function renderAuditLogs() {
+  const logs = getStore('auditLogs', []);
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Audit Logs</h1><p style="font-size:13px;color:var(--muted)">Complete system activity trail</p></div></div>
+  <div class="card">
+    <div class="card-header"><i class="fas fa-clipboard-list" style="color:var(--accent)"></i> Audit Trail (${logs.length})</div>
+    ${logs.length === 0 ? '<div style="text-align:center;padding:40px;color:var(--muted)">No audit logs recorded</div>' : `
+    <div style="overflow-x:auto"><table>
+      <tr><th>Timestamp</th><th>User</th><th>Role</th><th>Action</th><th>Details</th></tr>
+      ${logs.map(l => `<tr>
+        <td class="mono" style="font-size:12px;white-space:nowrap">${formatDate(l.timestamp)} ${formatTime(l.timestamp)}</td>
+        <td style="font-weight:600">${l.userName}</td>
+        <td><span class="badge badge-${l.role}" style="font-size:9px">${l.role}</span></td>
+        <td style="font-weight:600;color:var(--accent)">${l.action}</td>
+        <td style="font-size:13px;color:var(--muted);max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${l.details}">${l.details}</td>
+      </tr>`).join('')}
+    </table></div>`}
+  </div>`;
+}
+
+/* ============================================
+   ADJUST VAT
+   ============================================ */
+function renderAdjustVat() {
+  const currentVat = getStore('vatRate', DEFAULT_VAT);
+  return `
+  <div class="top-bar"><div><h1 style="font-size:22px;font-weight:700">Adjust VAT</h1><p style="font-size:13px;color:var(--muted)">Configure value-added tax rate</p></div></div>
+  <div class="card" style="max-width:500px">
+    <div class="card-header"><i class="fas fa-percentage" style="color:var(--accent)"></i> VAT Configuration</div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px">Current VAT Rate</label>
+      <div style="display:flex;align-items:center;gap:10px">
+        <input type="number" id="vat-input" value="${currentVat}" step="0.1" min="0" max="100" style="max-width:150px;text-align:center;font-size:18px;font-weight:700">
+        <span style="font-size:18px;font-weight:600;color:var(--muted)">%</span>
+      </div>
+    </div>
+    <div style="padding:12px;background:var(--bg2);border-radius:8px;margin-bottom:20px;font-size:13px;color:var(--muted)">
+      <i class="fas fa-info-circle" style="color:var(--info);margin-right:6px"></i>
+      This rate applies to all new sales. Existing transactions are not affected.
+    </div>
+    <button class="btn btn-primary" onclick="saveVat()"><i class="fas fa-save"></i> Update VAT Rate</button>
+  </div>`;
+}
+
+function saveVat() {
+  const val = parseFloat(document.getElementById('vat-input').value);
+  if (isNaN(val) || val < 0 || val > 100) { toast('Enter a valid VAT rate (0-100)', 'error'); return; }
+  const old = getStore('vatRate', DEFAULT_VAT);
+  setStore('vatRate', val);
+  addAudit('VAT Change', `VAT rate changed from ${old}% to ${val}%`);
+  toast(`VAT rate updated to ${val}%`, 'success');
+  renderPage();
+}
+
+/* ============================================
+   INITIALIZE APP
+   ============================================ */
+render();
+</script>
+</body>
+</html>
